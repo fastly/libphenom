@@ -13,6 +13,7 @@ ck_SOURCES = \
 	thirdparty/ck/src/ck_epoch.c \
 	thirdparty/ck/src/ck_hp.c \
 	thirdparty/ck/src/ck_hs.c \
+	thirdparty/ck/src/ck_rhs.c \
 	thirdparty/ck/src/ck_ht.c
 
 libphenom_la_CPPFLAGS = \
