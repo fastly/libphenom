@@ -144,7 +144,7 @@ if ! $PKG_CONFIG --exists --atleast-version=0.3.3 --max-version=0.4.1 --print-er
   AC_MSG_ERROR([ck is required])
 fi
 CFLAGS="$CFLAGS `$PKG_CONFIG --cflags ck`"
-LIBS="$LIBS `pkg_config_libs ck`"
+LIBS="$LIBS -Wl,-Bstatic `pkg_config_libs ck` -Wl,-Bdynamic "
 
 AC_PATH_PROG(PHP, php, true)
 AC_SUBST(PHP)
