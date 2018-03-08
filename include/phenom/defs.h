@@ -53,7 +53,11 @@
 #endif
 
 #endif
+
+#ifndef _GNU_SOURCE
 #define _GNU_SOURCE
+#endif
+
 #define _DARWIN_C_SOURCE
 
 // Ensure that PRIu32 and friends get defined for both C99
