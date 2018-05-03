@@ -117,14 +117,12 @@ void ph_logv(uint8_t level, const char *fmt, va_list ap)
   if (len == 0) {
     return;
   }
-
   me = ph_thread_self();
   get_tname(me, tname, sizeof(tname));
   va_copy(copy, ap);
   ph_string_printf(&mystr,
-      "%" PRIi64 ".%03d %s: %s `Pv%s%p%s",
-      (int64_t)now.tv_sec, (int)(now.tv_usec / 1000),
-      log_labels[level], tname,
+      "%s: `Pv%s%p%s",
+      log_labels[level],
       fmt, ph_vaptr(copy),
       fmt[len-1] == '\n' ? "" : "\n");
   va_end(copy);
