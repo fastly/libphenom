@@ -55,30 +55,6 @@ uint8_t ph_log_level_get(void)
   return log_level;
 }
 
-static void get_tname(ph_thread_t *me, char *buf, uint32_t size)
-{
-  uint64_t tid;
-
-  if (me) {
-    ph_snprintf(buf, size, "%s/%d", me->name, me->tid);
-    return;
-  }
-
-  tid = get_own_tid();
-
-#ifdef HAVE_PTHREAD_GETNAME_NP
-  if (pthread_getname_np(pthread_self(), buf, size) == 0) {
-    int len = strlen(buf);
-    if (len > 0) {
-      ph_snprintf(buf + len, size - len, "/%" PRIu64, tid);
-      return;
-    }
-  }
-#endif
-
-  ph_snprintf(buf, size, "lwp/%" PRIu64, tid);
-}
-
 // Make a best effort at avoiding collisions in the circular buffer;
 // it is theoretically possible for high logging traffic to rotate
 // all the way through the buffer and collide on the same offset.
@@ -100,14 +76,12 @@ static void log_to_buffer(struct timeval *now, ph_string_t *str)
 void ph_logv(uint8_t level, const char *fmt, va_list ap)
 {
   struct timeval now = ph_time_now();
-  ph_thread_t *me;
   int len;
   va_list copy;
   char *buf;
   PH_STRING_DECLARE_STACK(mystr, 1024);
   void *args[] = { &level, &mystr };
   static ph_hook_point_t *hook = NULL;
-  char tname[32];
 
   if (level > log_level) {
     return;
@@ -117,14 +91,10 @@ void ph_logv(uint8_t level, const char *fmt, va_list ap)
   if (len == 0) {
     return;
   }
-
-  me = ph_thread_self();
-  get_tname(me, tname, sizeof(tname));
   va_copy(copy, ap);
   ph_string_printf(&mystr,
-      "%" PRIi64 ".%03d %s: %s `Pv%s%p%s",
-      (int64_t)now.tv_sec, (int)(now.tv_usec / 1000),
-      log_labels[level], tname,
+      "%s: `Pv%s%p%s",
+      log_labels[level],
       fmt, ph_vaptr(copy),
       fmt[len-1] == '\n' ? "" : "\n");
   va_end(copy);
