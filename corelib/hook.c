@@ -352,11 +352,11 @@ ph_result_t ph_hook_unregister_cstr(const char *name, ph_hook_func func,
   return do_unregister(hp, func, closure);
 }
 
-void ph_hook_invoke_vargs(ph_hook_point_t *hook, uint8_t nargs, ...)
+void ph_hook_invoke_vargs(ph_hook_point_t *hook, int nargs, ...)
 {
   va_list ap;
 
-  va_start(ap, nargs);
+  va_start(ap, (int)nargs);
   ph_hook_invokev(hook, nargs, ap);
   va_end(ap);
 }
